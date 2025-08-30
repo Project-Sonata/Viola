@@ -8,8 +8,7 @@ ext {
     sparkVersion = "3.5.0"
 }
 
-
-group 'com.odeyalo.viola'
+group 'com.odeyalo.viola.on-repeat'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
