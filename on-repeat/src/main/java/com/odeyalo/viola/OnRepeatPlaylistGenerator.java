@@ -16,18 +16,27 @@ public final class OnRepeatPlaylistGenerator {
                 .master("local[*]")
                 .getOrCreate();
 
-        final Dataset<Row> userHistory = spark.read().parquet("on-repeat/history/30/1/user_listening_history.parquet");
+        final Dataset<Row> userHistory = spark.read().parquet("on-repeat/history/30/1/*");
 
         Dataset<Row> dataset = userHistory.groupBy("user_id", "track_id")
                 .count();
 
         WindowSpec window = Window.partitionBy("user_id").orderBy(desc("count"));
 
-        Dataset<Row> top20 = dataset.withColumn("rank", row_number().over(window))
-                .filter(col("rank").$less$eq(50));
+        Dataset<Row> top50 = dataset.withColumn("rank", row_number().over(window))
+                .filter(col("rank").$less$eq(50))
+                .groupBy("user_id")
+                .agg(
+                        collect_list(struct("track_id", "count")).as("tracks")
+                );
 
-
-        top20.write().partitionBy("user_id").json("output.parquet");
+        top50.selectExpr("to_json(struct(*)) as value")
+                .write()
+                .format("kafka")
+                .option("kafka.bootstrap.servers", "localhost:9092")
+                .option("topic", "playlist-generation")
+                .option("value", "string")
+                .save();
 
         spark.close();
     }

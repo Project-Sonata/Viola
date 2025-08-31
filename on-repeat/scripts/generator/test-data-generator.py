@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import random
 
 # Config
-n_rows = 100000  # number of events to generate
+n_rows = 1  # number of events to generate
 n_users = 50   # number of unique users
 n_tracks = 100 # number of unique tracks
 
@@ -30,6 +30,6 @@ df = pd.DataFrame({
 })
 
 # Save to Parquet
-df.to_parquet("history/30/1/user_listening_history.parquet", engine="pyarrow", index=False)
+df.to_parquet("history/08/31/user_listening_history.parquet", engine="pyarrow", index=False)
 
 print("Parquet file 'user_listening_history.parquet' generated with", n_rows, "rows.")

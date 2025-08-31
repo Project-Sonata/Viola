@@ -13,3 +13,16 @@ Single entrypoint collects the user data, enrich the events and generate the par
 
 ### On Repeat
 Service is responsible to generate the On-Repeat playlist
+
+### Architecture
+
+Sonata Connect -> Aggregator -> S3/local storage with parquet files
+
+Spark Job (On Repeat) -> consume parquet data ->
+the songs listened the most during the week ->
+send to kafka topic playlist-generation ->
+consumed by PlaylistGenerationService -> 
+generate cover, name and playlist description ->
+playlist generated event -> 
+-> consumed by playlist service ->
+save it to user library
